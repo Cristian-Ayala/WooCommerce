@@ -1,0 +1,41 @@
+version: "3.3"
+
+services:
+  wordpress:
+    image: wordpress:php8.3-apache
+    container_name: wordpress
+    restart: unless-stopped
+    ports:
+      - "8102:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${MARIADB_USER}
+      WORDPRESS_DB_PASSWORD: ${MARIADB_PASSWORD}
+      WORDPRESS_DB_NAME: ${MARIADB_DATABASE}
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - red_wp
+
+  db:
+    image: mariadb:11.2.2
+    container_name: db
+    restart: unless-stopped
+    expose:
+      - 3306
+    environment:
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - red_wp
+
+volumes:
+  wordpress:
+  dbdata:
+
+networks:
+  red_wp:
